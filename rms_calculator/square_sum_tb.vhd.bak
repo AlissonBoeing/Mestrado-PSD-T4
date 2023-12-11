@@ -1,0 +1,72 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity MeuTestbench is
+end MeuTestbench;
+
+architecture Behavioral of MeuTestbench is
+  -- Declare os sinais e constantes necessários
+  constant NUM_AMOSTRAS : integer := 256;
+  signal entrada : std_logic_vector(7 downto 0) := (others => '0');
+  signal saida : std_logic_vector(7 downto 0);
+
+  -- Declare o vetor de amostras
+  type AmostraArray is array (0 to NUM_AMOSTRAS - 1) of std_logic_vector(7 downto 0);
+  constant AMOSTRAS : AmostraArray := (
+								10, 8, 6, 4, 2, 0, -1, -2, -5, -7, -8, -11, -12, -14, -16, -18, -20, 
+                       -21, -23, -25, -26, -28, -30, -31, -33, -35, -36, -37, -37, -39, -39, 
+                       -41, -42, -42, -44, -44, -44, -45, -47, -47, -47, -47, -48, -47, -48,
+                       -48, -48, -48, -48, -48, -47, -48, -46, -47, -46, -46, -45, -44, -45, 
+                       -43, -42, -42, -41, -39, -38, -37, -35, -34, -32, -33, -30, -28, -28, 
+                       -26, -24, -23, -20, -18, -17, -14, -14, -11, -10, -8, -6, -5, -1, 0,  
+                         2, 4, 5, 7, 9, 10, 13, 15, 18, 20, 21, 22, 24, 25, 26, 30, 30, 33,  
+                        35, 34, 37, 39, 40, 41, 40, 42, 44, 45, 45, 46, 48, 49, 48, 49, 50,  
+                        50, 51, 50, 51, 51, 51, 52, 51, 50, 51, 50, 51, 50, 49, 49, 49, 47,  
+                        46, 46, 45, 45, 43, 42, 42, 39, 39, 38, 36, 36, 34, 33, 31, 29, 28,  
+                        26, 24, 22, 20, 19, 18, 13, 15, 13, 9, 8, 5, 4, 2, 0, -1, -3, -5, -6,
+                        -9, -9, -13, -15, -16, -19, -20, -21, -24, -25, -26, -30, -30, -32,  
+                        -34, -35, -37, -37, -39, -40, -39, -43, -41, -43, -44, -43, -45, -46, 
+                        -46, -47, -47, -47, -48, -50, -49, -48, -48, -47, -48, -47, -47, -47,
+                        -47, -47, -46, -46, -45, -44, -44, -43, -42, -41, -40, -39, -38, -36,
+                        -36, -34, -33, -32, -29, -29, -28, -25, -24, -22, -20, -17, -16, -16,
+                        -12, -11, -9, -6, -5, -3, -1, 0, 3, 4
+  );
+
+  -- Componente a ser testado
+  component SeuComponente
+    port (
+      entrada : in std_logic_vector(7 downto 0);
+      saida : out std_logic_vector(7 downto 0)
+    );
+  end component;
+
+begin
+  -- Instancie o componente
+  UUT : SeuComponente
+    port map (
+      entrada => entrada,
+      saida => saida
+    );
+
+  -- Processo de estimulação
+  process
+  begin
+    for i in 0 to NUM_AMOSTRAS - 1 loop
+      -- Atribua a amostra ao sinal de entrada
+      entrada <= AMOSTRAS(i);
+
+      -- Aguarde alguns ciclos de clock (se necessário)
+      wait for 10 ns;
+
+      -- Exiba os resultados
+      report "Amostra " & integer'image(i) & ": Entrada = " & std_logic_vector'image(entrada) &
+             ", Saída = " & std_logic_vector'image(saida);
+    end loop;
+
+    -- Encerre a simulação
+    wait;
+  end process;
+
+end Behavioral;

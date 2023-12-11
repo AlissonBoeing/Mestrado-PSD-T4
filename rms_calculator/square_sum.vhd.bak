@@ -1,0 +1,45 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+
+entity square_sum is
+generic ( N : integer := 8);
+port (
+  i_CLK : in std_logic;
+  i_RST : in std_logic;
+  i_START_SQUARE_SUM : in std_logic;
+  i_ACCELERATION : in std_logic_vector(N-1 downto 0);
+  o_SQUARE_SUM_DONE : out  std_logic;
+  o_SQUARE_SUM : out std_logic_vector((N*4)-1 downto 0));
+end square_sum;
+
+architecture square_sum_arch of square_sum is
+signal w_SQUARE_SUM  : signed((N*2)-1 downto 0) := (others => '0');
+signal w_CURRENT_SQUARE_SUM : out std_logic_vector((N*2)-1 downto 0));
+signal w_SQUARE_SUM_DONE : std_logic := '0';
+signal w_COUNTER : integer := 0;
+
+
+begin
+  
+  process(i_CLK, i_RST, i_START_MAC)
+  begin
+   if (i_RST = '1') then
+	  w_MAC_FINISHED <= '0';
+	  w_MAC <= (others => '0');
+	elsif rising_edge(i_CLK) then
+	  if i_START_MAC = '1' then
+	    if w_CNT < 180 then
+		   w_MAC <= w_OLD_MAC + (i_ACC * i_ACC)
+		   w_CNT <= w_CNT + 1;
+		else 
+		 w_MAC_FINISHED <= '1';
+	  end if;
+	else
+	end if;
+  end process;
+  
+  o_MAC <= std_logic_vector(w_MAC);
+  o_MAC_FINISHED <= w_MAC_FINISHED;
+end mac_arch;

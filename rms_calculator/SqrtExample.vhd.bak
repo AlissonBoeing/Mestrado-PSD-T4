@@ -1,0 +1,32 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use IEEE.MATH_REAL.ALL;
+
+entity SqrtExample is
+    Port ( clk : in STD_LOGIC;
+           reset : in STD_LOGIC;
+           sum_of_squares : in INTEGER;
+           result : out INTEGER);
+end SqrtExample;
+
+architecture Behavioral of SqrtExample is
+    signal sqrt_result : REAL;
+    signal result_internal : INTEGER;
+
+begin
+
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            sqrt_result <= 0.0;
+            result_internal <= 0;
+        elsif rising_edge(clk) then
+            sqrt_result <= sqrt(to_real(sum_of_squares));
+            result_internal <= to_integer(sqrt_result);
+        end if;
+    end process;
+
+    result <= result_internal;
+
+end Behavioral;
