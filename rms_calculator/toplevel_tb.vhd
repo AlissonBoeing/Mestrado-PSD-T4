@@ -3,19 +3,20 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-entity square_sum_tb is
-end square_sum_tb;
+entity toplevel_tb is
+end toplevel_tb;
 
-architecture testbench of square_sum_tb is
+architecture testbench of toplevel_tb is
   signal w_CLK : std_logic := '0';     
   signal w_RST : std_logic := '0';     
+  signal w_GO : std_logic := '0';      
   signal w_START_SQUARE_SUM : std_logic := '0';  
+  signal w_SAMPLES : std_logic_vector(15 downto 0);
   signal w_ACCELERATION : std_logic_vector(7 downto 0)  := (others => '0'); 
-  signal w_SQUARE_SUM_DONE : std_logic; 
-  signal w_SQUARE_SUM : std_logic_vector(63 downto 0)  := (others => '0'); 
+  signal w_VALUE_DONE : std_logic; 
+  signal w_VALUE : std_logic_vector(63 downto 0)  := (others => '0'); 
   constant CLK_PERIOD : time := 10 ns; 
 
-  
 type acc_buffer is array (0 to 255) of std_logic_vector(7 downto 0);
   constant acc : acc_buffer := (
 "00001010", "00001000", "00000110", "00000100", "00000010", "00000000", "11111111", "11111110", "11111011", "11111001",
@@ -46,30 +47,31 @@ type acc_buffer is array (0 to 255) of std_logic_vector(7 downto 0);
 "11111011", "11111101", "11111111", "00000000", "00000011", "00000100");
 
   -- Instância do componente
-  COMPONENT square_sum
-    generic ( N : integer := 8;
-              SAMPLES : integer := 256 );
+  COMPONENT toplevel
+    generic ( N : integer := 8);
     port (
-      i_CLK : in std_logic;
-      i_RST : in std_logic;
-      i_START_SQUARE_SUM : in std_logic;
-      i_ACCELERATION : in std_logic_vector(N-1 downto 0);
-      o_SQUARE_SUM_DONE : out std_logic;
-      o_SQUARE_SUM : out std_logic_vector((N*8)-1 downto 0)
+	  i_CLK : in std_logic;
+	  i_RST : in std_logic;
+	  i_GO  : in std_logic;
+	  i_SAMPLES: in std_logic_vector((N*2) - 1 downto 0);
+	  i_ACCELERATION : in std_logic_vector(N-1 downto 0);
+	  o_VALUE_DONE: out std_logic;
+	  o_VALUE : out std_logic_vector((N*8) - 1 downto 0)
     );
   end component;
 
 begin
 
-  UUT : square_sum
-    generic map (N => 8, SAMPLES => 256)
+  UUT : toplevel
+    generic map (N => 8)
     port map (
       i_CLK => w_CLK,
       i_RST => w_RST,
-      i_START_SQUARE_SUM => w_START_SQUARE_SUM,
+      i_GO => w_GO,
+		i_SAMPLES => w_SAMPLES,
       i_ACCELERATION => w_ACCELERATION,
-      o_SQUARE_SUM_DONE => w_SQUARE_SUM_DONE,
-      o_SQUARE_SUM => w_SQUARE_SUM
+      o_VALUE_DONE => w_VALUE_DONE,
+      o_VALUE => w_VALUE
     );
 
   process
@@ -86,10 +88,11 @@ begin
     w_RST <= '1'; 
     wait for 2 * CLK_PERIOD;
     w_RST <= '0'; 
+	 w_GO <= '1';
+	 w_SAMPLES <= "0000000100000000"; -- 256
     wait for 2 * CLK_PERIOD;
-	 
-    w_START_SQUARE_SUM <= '1'; 
-	
+	 w_GO <= '0';
+	 	
 	teste: for i in 0 to 255 loop
 	  w_ACCELERATION <= acc(i);
 	  wait for CLK_PERIOD; 
@@ -101,8 +104,8 @@ begin
   process
   begin
     wait for 10 * CLK_PERIOD;
-    assert w_SQUARE_SUM_DONE = '1' report "Erro: o sinal w_SQUARE_SUM_DONE não está correto" severity error;
-	 assert w_SQUARE_SUM = 305854 report "Erro: Calculo incorreto" severity error;
+    assert w_VALUE_DONE = '1' report "Erro: o sinal w_VALUE_DONE não está correto" severity error;
+	 assert w_VALUE = 1194 report "Erro: w_VALUE incorreto" severity error;
     wait;
   end process;
 

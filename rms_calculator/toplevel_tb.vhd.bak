@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-entity square_sum_tb is
-end square_sum_tb;
+entity toplevel_tb is
+end toplevel_tb;
 
-architecture testbench of square_sum_tb is
+architecture testbench of toplevel_tb is
   signal w_CLK : std_logic := '0';     
   signal w_RST : std_logic := '0';     
   signal w_START_SQUARE_SUM : std_logic := '0';  
@@ -46,16 +46,17 @@ type acc_buffer is array (0 to 255) of std_logic_vector(7 downto 0);
 "11111011", "11111101", "11111111", "00000000", "00000011", "00000100");
 
   -- Instância do componente
-  COMPONENT square_sum
+  COMPONENT toplevel
     generic ( N : integer := 8;
               SAMPLES : integer := 256 );
     port (
-      i_CLK : in std_logic;
-      i_RST : in std_logic;
-      i_START_SQUARE_SUM : in std_logic;
-      i_ACCELERATION : in std_logic_vector(N-1 downto 0);
-      o_SQUARE_SUM_DONE : out std_logic;
-      o_SQUARE_SUM : out std_logic_vector((N*8)-1 downto 0)
+  i_CLK : in std_logic;
+  i_RST : in std_logic;
+  i_GO  : in std_logic;
+  i_SAMPLES: in std_logic_vector((N*2) - 1 downto 0);
+  i_ACCELERATION : in std_logic_vector(N-1 downto 0);
+  o_VALUE_DONE: out std_logic;
+  o_VALUE : out std_logic_vector((N*8) - 1 downto 0));
     );
   end component;
 

@@ -27,7 +27,7 @@ begin
 	 end if;
   end process;
   
-  process(w_STATE, i_SQUARE_SUM_DONE, i_RMS_DONE)
+  process(w_STATE, i_SQUARE_SUM_DONE, i_RMS_DONE, i_GO)
   begin
     case w_STATE is
 	   when s_IDLE => if (i_GO = '1') then

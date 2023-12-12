@@ -3,8 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity square_sum is
-generic ( N : integer := 8;
-			SAMPLES : integer := 256	);
+generic ( N : integer := 8; SAMPLES : integer := 256);
 
 port (
   i_CLK : in std_logic;
@@ -19,7 +18,6 @@ architecture square_sum_arch of square_sum is
 signal w_SQUARE_SUM  : signed((N*8)-1 downto 0) := (others => '0');
 signal w_SQUARE_SUM_DONE : std_logic := '0';
 signal w_COUNTER : integer range 0 to SAMPLES := 0;
-
 
 begin
   
@@ -36,7 +34,7 @@ begin
 		   w_COUNTER <= w_COUNTER + 1;
 		 else 
 			w_SQUARE_SUM_DONE <= '1';
-		 end if;
+			end if;		 
 		end if;
 	 end if;
   end process;
